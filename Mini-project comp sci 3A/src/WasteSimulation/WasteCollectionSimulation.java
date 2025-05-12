@@ -172,31 +172,34 @@ public class WasteCollectionSimulation {
 		}
 
 		// Add bins
+		// Add bins
 		for (WasteType type : WasteType.values()) {
-			File typeFolder = new File(BIN_IMAGE_PATH + type.toString().toLowerCase());
-			File[] binImages = typeFolder.listFiles();
+		    File typeFolder = new File(BIN_IMAGE_PATH + type.toString().toLowerCase());
+		    File[] binImages = typeFolder.exists() ? typeFolder.listFiles() : null;
+		    
+		    for (int i = 0; i < 2; i++) {
+		        int r, c;
+		        Graph.GraphNode<GridCell> node;
+		        do {
+		            r = rand.nextInt(rows);
+		            c = rand.nextInt(cols);
+		            node = findNode(r, c);
+		        } while (node == null || node.getData().type != WALKABLE);
 
-			for (int i = 0; i < 2; i++) {
-				int r, c;
-				Graph.GraphNode<GridCell> node;
-				do {
-					r = rand.nextInt(rows);
-					c = rand.nextInt(cols);
-					node = findNode(r, c);
-				} while (node == null || node.getData().type != WALKABLE);
+		        char binChar = switch (type) {
+		            case PLASTIC -> PLASTIC_BIN;
+		            case PAPER -> PAPER_BIN;
+		            case METAL -> METAL_BIN;
+		            case GLASS -> GLASS_BIN;
+		        };
 
-				char binChar = switch (type) {
-				case PLASTIC -> PLASTIC_BIN;
-				case PAPER -> PAPER_BIN;
-				case METAL -> METAL_BIN;
-				case GLASS -> GLASS_BIN;
-				};
-
-				node.getData().type = binChar;
-				if (binImages != null && binImages.length > 0) {
-					bins.add(new Bin(r, c, type, binImages[rand.nextInt(binImages.length)]));
-				}
-			}
+		        node.getData().type = binChar;
+		        File binImage = null;
+		        if (binImages != null && binImages.length > 0) {
+		            binImage = binImages[rand.nextInt(binImages.length)];
+		        }
+		        bins.add(new Bin(r, c, type, binImage));
+		    }
 		}
 
 		// Add waste items
@@ -427,8 +430,6 @@ public class WasteCollectionSimulation {
 		welcomeDialog.add(continueButton, BorderLayout.SOUTH);
 		welcomeDialog.setVisible(true);
 	}
-	
-	
 
 	private void showSetupInfoScreen() {
 		JDialog setupInfoDialog = new JDialog(frame, "Simulation Setup", true);
@@ -479,7 +480,7 @@ public class WasteCollectionSimulation {
 
 		// Map Size
 		JLabel sizeLabel = new JLabel("Map Size:");
-		String[] sizes = { "Small (20x20)", "Medium (25x25)", "Large (29x29)" };
+		String[] sizes = { "Small", "Medium", "Large" };
 		JComboBox<String> sizeCombo = new JComboBox<>(sizes);
 
 		// Robot Skill
@@ -547,7 +548,6 @@ public class WasteCollectionSimulation {
 			waitingForUser = false;
 		});
 	}
-	
 
 	public void showWasteObtainedPopup(Waste waste) {
 		SwingUtilities.invokeLater(() -> {
@@ -633,12 +633,16 @@ public class WasteCollectionSimulation {
 			// Bin image
 			JPanel binPanel = new JPanel(new BorderLayout());
 			try {
-				BufferedImage binImg = ImageIO.read(bin.imageFile);
-				binPanel.add(new JLabel(new ImageIcon(binImg.getScaledInstance(120, 120, Image.SCALE_SMOOTH))),
-						BorderLayout.CENTER);
-				binPanel.add(new JLabel(bin.type + " Bin", SwingConstants.CENTER), BorderLayout.SOUTH);
+			    BufferedImage binImg = bin.imageFile != null ? ImageIO.read(bin.imageFile) : null;
+			    if (binImg != null) {
+			        binPanel.add(new JLabel(new ImageIcon(binImg.getScaledInstance(120, 120, Image.SCALE_SMOOTH))),
+			                BorderLayout.CENTER);
+			        binPanel.add(new JLabel(bin.type + " Bin", SwingConstants.CENTER), BorderLayout.SOUTH);
+			    } else {
+			        binPanel.add(new JLabel("Bin image missing"));
+			    }
 			} catch (IOException e) {
-				binPanel.add(new JLabel("Bin image missing"));
+			    binPanel.add(new JLabel("Error loading bin image"));
 			}
 
 			imagePanel.add(wastePanel);
@@ -1024,6 +1028,7 @@ public class WasteCollectionSimulation {
 	}
 
 	public static void main(String[] args) {
+
 		SwingUtilities.invokeLater(() -> {
 			JFrame setupFrame = new JFrame("Simulation Setup");
 			setupFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

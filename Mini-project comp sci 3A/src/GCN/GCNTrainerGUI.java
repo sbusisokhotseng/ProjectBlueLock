@@ -424,6 +424,7 @@ public class GCNTrainerGUI extends JFrame {
 
             // Determine prediction
             int predictedClass = argMax(avgScores);
+            
             String predicted = classNames[predictedClass];
 
             // Determine actual class based on image number

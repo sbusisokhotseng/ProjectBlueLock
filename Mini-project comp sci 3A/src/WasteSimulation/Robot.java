@@ -1,9 +1,9 @@
 package WasteSimulation;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
-
 import GCN.GCNInferenceHelper;
 import WGraph.Graph;
 
@@ -132,7 +132,7 @@ public class Robot {
     	        simulation.removeWaste(waste);
     	        knownWastes.remove(new Point(row, col));
     	        
-    	        WasteType classifiedType = classifyWaste(waste.imageFile);
+    	        WasteType classifiedType = classifyWaste(waste.imageFile); //********************//
     	        carrying.type = classifiedType;
     	        
     	        // Use the new popup method
@@ -170,6 +170,22 @@ public class Robot {
     //_________________________________________________________________________________________
 
     private WasteType classifyWaste(File wasteImage) {
+        /*try {
+        	
+        
+            BufferedImage image = javax.imageio.ImageIO.read(wasteImage);
+            if (image == null) return WasteType.PLASTIC;
+
+            Color color = simulation.getDominantColor(image);
+            if (simulation.isRed(color)) return WasteType.METAL;
+            if (simulation.isBlue(color)) return WasteType.PAPER;
+            if (simulation.isYellow(color)) return WasteType.PLASTIC;
+            if (simulation.isGreen(color)) return WasteType.GLASS;
+
+            return WasteType.PLASTIC;
+        } catch (Exception e) {
+            return WasteType.PLASTIC;
+        }*/
     	return GCNInferenceHelper.Validate1Image(wasteImage);
     }
     public boolean isInFOV(int r, int c) {

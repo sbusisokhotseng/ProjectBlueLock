@@ -46,11 +46,6 @@ public class WasteCollectionSimulation {
 	static final String BIN_IMAGE_PATH = "bin_images/";
 
 	// Color constants
-	private static final Color ROBOT_COLOR = new Color(128, 0, 128);
-	private static final Color UNIDENTIFIED_WASTE_COLOR = Color.MAGENTA;
-	private static final Color FOV_COLOR = new Color(200, 200, 255, 100);
-	private static final Color EXPLORED_COLOR = new Color(220, 220, 220);
-	private static final Color WALL_COLOR = new Color(100, 100, 100);
 	private static final int CELL_SIZE = 20;
 
 	// Simulation state
@@ -398,7 +393,7 @@ public class WasteCollectionSimulation {
 			node.getData().type = WALKABLE;
 	}
 
-	private void showWelcomeScreen() {
+	public void showWelcomeScreen() {
 		JDialog welcomeDialog = new JDialog(frame, "Welcome", true);
 		welcomeDialog.setLayout(new BorderLayout());
 		welcomeDialog.setSize(600, 400);
@@ -1027,15 +1022,5 @@ public class WasteCollectionSimulation {
 		}
 	}
 
-	public static void main(String[] args) {
 
-		SwingUtilities.invokeLater(() -> {
-			JFrame setupFrame = new JFrame("Simulation Setup");
-			setupFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-			// Show welcome screen first
-			WasteCollectionSimulation simulation = new WasteCollectionSimulation();
-			simulation.showWelcomeScreen();
-		});
-	}
 }
